@@ -30,7 +30,7 @@ If you're on OSX or cannot execute `docker` without sudo, you can change the `do
 ### Note
 
 As Docker executes as `root`, during the execution of the `jenkins` script you'll be asked to provide your password to become `root`.
-All files/directories created during the execution of the `jenkins` script, are located within this current directory as ".<directory>". `jenkins` has a command to clean it all up
+All files/directories created during the execution of the `jenkins` script, are located within this current directory as ".\<directory\>". `jenkins` has a command to clean it all up
 
 Links to resources
 ------------------
@@ -39,8 +39,8 @@ Links to resources
 - [Jenkins JobDSL plugin wiki](https://github.com/jenkinsci/job-dsl-plugin/wiki)
 - [Continuous Delivery related info](http://continuousdelivery.com)
 - GradleSummit2014 - Managing Jenkins With Gradle - Gary Hale
-  [video](https://www.youtube.com/watch?v=FGs6_D8ul60)
-  [slides](https://speakerdeck.com/ghale/managing-jenkins-with-gradle)
-  [Gradle Jenkins Plugin](https://github.com/ghale/gradle-jenkins-plugin)
+  ([video](https://www.youtube.com/watch?v=FGs6_D8ul60)
+  |[slides](https://speakerdeck.com/ghale/managing-jenkins-with-gradle)
+  |[Gradle Jenkins Plugin](https://github.com/ghale/gradle-jenkins-plugin))
 - Next-gen Continuous Delivery [Pipeline.cd](http://pipeline.cd)
 
