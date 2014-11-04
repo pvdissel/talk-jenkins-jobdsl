@@ -1,0 +1,433 @@
+{
+    "fullName": "Something PJJ",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "API",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-pjj-api"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean pmd:pmd findbugs:findbugs cobertura:cobertura install",
+                    "opts": ""
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "ASCII",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "80",
+                            "line": "80",
+                            "conditional": "70"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "0",
+                            "line": "0",
+                            "conditional": "0"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "0",
+                            "line": "0",
+                            "conditional": "0"
+                        }
+                    ]
+                },
+                "dry": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "highThreshold": "50",
+                    "normalThreshold": "25"
+                },
+                "findBugs": {
+                    "healthy": "5",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "pmd": {
+                    "healthy": "0",
+                    "unhealthy": "",
+                    "thresholdLimit": "high",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "tasks": {
+                    "healthy": "5",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "pattern": "**/*.java",
+                    "excludePattern": "",
+                    "high": "FIXME",
+                    "normal": "TODO",
+                    "low": "",
+                    "ignoreCase": "true"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": " **/*-common-*.*,**/*-api-*.*,**/*-driver-*.*",
+                    "excludePattern": "**/*tar.gz,**/*.war,**/*.zip,**/*.dar"
+                }
+            }
+        },
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-pjj"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean pmd:pmd pmd:cpd findbugs:findbugs cobertura:cobertura dependency:list package",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "ASCII",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "0",
+                            "line": "90",
+                            "conditional": "90"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "0",
+                            "line": "70",
+                            "conditional": "60"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "0",
+                            "line": "20",
+                            "conditional": "20"
+                        }
+                    ]
+                },
+                "dry": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "highThreshold": "50",
+                    "normalThreshold": "25"
+                },
+                "pmd": {
+                    "healthy": "30",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "tasks": {
+                    "healthy": "5",
+                    "unhealthy": "",
+                    "thresholdLimit": "high",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "pattern": "**/*.java",
+                    "excludePattern": "",
+                    "high": "FIXME",
+                    "normal": "TODO",
+                    "low": "",
+                    "ignoreCase": "true"
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["something-pjj-web/target/pjj-dc/**/*=>tld/company/pjj"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-pjj-db"
+            },
+            "ci": {
+                "locks": [
+                    "DB_RELATED_LOCK",
+                    "PEE_DB",
+                    "SOME_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh afe-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/pjj_db-dc/**/*=>tld/company/pjj_db"],
+                "params": []
+            }
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "fullName": "Someting AAA",
+    "xlTest": {
+        "scm": {
+            "type": "git",
+            "base": "git@git.company.tld:group/something-aaa.git"
+        },
+        "projectDir": "something-aaa-fitnesse"
+    },
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-aaa.git"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "",
+                    "goals": "clean dependency:list package",
+                    "opts": ""
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/aaa-dc/**/*=>tld/company/aaa"],
+                "params": []
+            }
+        }
+    ]
+}

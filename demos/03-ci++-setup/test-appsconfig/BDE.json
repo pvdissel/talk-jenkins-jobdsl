@@ -1,0 +1,28 @@
+{
+    "fullName": "Something BDE",
+    "pipelines": [
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/bde"
+            },
+            "ci": {
+                "locks": [],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh bde-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/bde_db-dc/**/*=>tld/company/bde_db"],
+                "params": []
+            }
+        }
+    ]
+}

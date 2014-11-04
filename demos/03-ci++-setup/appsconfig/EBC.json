@@ -1,0 +1,179 @@
+{
+    "fullName": "Something EBC",
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ebc"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean pmd:pmd findbugs:findbugs cobertura:cobertura dependency:list",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "ASCII",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "55",
+                            "line": "55",
+                            "conditional": "55"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "45",
+                            "line": "45",
+                            "conditional": "45"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "50",
+                            "line": "50",
+                            "conditional": "50"
+                        }
+                    ]
+                },
+                "findBugs": {
+                    "healthy": "5",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "pmd": {
+                    "healthy": "30",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "tasks": {
+                    "healthy": "5",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "pattern": "**/*.java",
+                    "excludePattern": "",
+                    "high": "FIXME",
+                    "normal": "TODO",
+                    "low": "",
+                    "ignoreCase": "true"
+                },
+                "locks": []
+            }
+        }
+    ]
+}

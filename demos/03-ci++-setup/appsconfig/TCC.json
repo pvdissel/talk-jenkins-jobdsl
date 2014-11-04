@@ -1,0 +1,30 @@
+{
+    "fullName": "Something TCC",
+    "pipelines": [
+        {
+            "type": "API",
+            "tool": {
+                "type": "gradle",
+                "version": "wrapper"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "ssh://git@stash.dev.company.tld/group/something-tcc-api.git"
+            },
+            "ci": {
+                "gradle": {
+                    "tasks": "build"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": ""
+                }
+            }
+        }
+    ]
+}

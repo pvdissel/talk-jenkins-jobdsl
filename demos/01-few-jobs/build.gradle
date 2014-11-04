@@ -1,0 +1,10 @@
+plugins {
+    id "nl.ikoodi.jenkins.jobdsl" version "0.1.5"
+    id "base"
+}
+
+jenkinsJobDsl {
+    jobConfigs {
+        from fileTree(dir: 'jobconfigs')
+    }
+}

@@ -1,0 +1,51 @@
+plugins {
+    id "nl.ikoodi.jenkins.jobdsl" version "0.1.5"
+    id "groovy"
+}
+
+repositories {
+    jcenter()
+}
+
+ext {
+    libraries = [:]
+    versions = [:]
+}
+
+versions += [
+        groovy: '1.8.9', // Jenkins' Groovy version :-(
+]
+
+libraries += [
+        groovy       : "org.codehaus.groovy:groovy-all:${versions.groovy}",
+        jenkinsJobDsl: 'org.jenkins-ci.plugins:job-dsl-core:1.26',
+]
+
+libraries.spock = ['org.spockframework:spock-core:0.7-groovy-1.8',
+                   libraries.groovy,
+                   'org.objenesis:objenesis:2.0',
+                   'cglib:cglib-nodep:2.2',
+]
+
+dependencies {
+    compile libraries.groovy
+    compile libraries.jenkinsJobDsl
+
+    testCompile libraries.spock
+}
+
+jenkinsJobDsl {
+    jobConfigs {
+        from file('projects.dsl.groovy')
+    }
+    classpath {
+        from fileTree(dir: 'appsconfig')
+        from sourceSets.main.groovy
+    }
+}
+
+// Force always clean, as gradle-jenkins-jobdsl 0.1.5  plugin has some caching issues
+classes.dependsOn clean
+// Force always check (aka test)
+prepareJobDslWorkspace.dependsOn check
+build.dependsOn generateJenkinsJobs

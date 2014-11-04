@@ -1,0 +1,246 @@
+{
+    "fullName": "Something MBB",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "FIX",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-mbb"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "something-mbb-fixtures/pom.xml",
+                    "goals": "clean package",
+                    "opts": ""
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": "**/*tar.gz, **/*.war, **/*.zip, **/*.dar,**/*onejar.jar"
+                }
+            }
+        },
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-mbb"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean compile package findbugs:findbugs cobertura:cobertura dependency:list",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "ASCII",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "55",
+                            "line": "65",
+                            "conditional": "65"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "45",
+                            "line": "45",
+                            "conditional": "45"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "50",
+                            "line": "50",
+                            "conditional": "50"
+                        }
+                    ]
+                },
+                "dry": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "highThreshold": "50",
+                    "normalThreshold": "25"
+                },
+                "pmd": {
+                    "healthy": "30",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "tasks": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "pattern": "**/*.java",
+                    "excludePattern": "",
+                    "high": "FIXME",
+                    "normal": "TODO",
+                    "low": "",
+                    "ignoreCase": "true"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": "**/*tar.gz, **/*.war, **/*.zip, **/*.dar,**/*onejar.jar"
+                }
+            },
+            "deploy": {
+                "publishedArtifacts": ["something-mbb-web/target/mbb-dc/**/*=>tld/company/mbb"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-mbb-db"
+            },
+            "ci": {
+                "locks": [
+                    "DB_RELATED_LOCK",
+                    "SOME_MORE_LOCK",
+                    "SOME_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh afe-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/mbb_db-dc/**/*=>tld/company/mbb_db"],
+                "params": []
+            }
+        }
+    ]
+}

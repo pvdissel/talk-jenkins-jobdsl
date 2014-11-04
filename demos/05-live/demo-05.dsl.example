@@ -1,0 +1,31 @@
+
+
+
+(1..15).each { no ->
+    job {
+        name "app_${no}"
+        description "CI for app #${no}"
+
+        scm {
+            git("git@myhost.tld:group/repo${no}.git")
+        }
+
+        steps {
+            gradle('clean build')
+        }
+    }
+}
+
+
+view {
+    name 'apps'
+
+    jobs {
+        regex 'app_.*'
+    }
+
+    columns {
+        name()
+        buildButton()
+    }
+}

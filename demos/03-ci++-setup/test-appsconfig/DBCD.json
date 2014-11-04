@@ -1,0 +1,37 @@
+{
+    "fullName": "Something DBCD",
+    "flow": {
+        "deploy": ["nightly"],
+        "deployGroup": "coreDB"
+    },
+    "pipelines": [
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/dbcd"
+            },
+            "ci": {
+                "locks": [
+                    "DBCD_DB",
+                    "SOME_MORE_LOCK",
+                    "SOME_OTHER_LOCK",
+                    "SOME_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh dbcd-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/dbcd_db-dc/**/*=>tld/company/dbcd_db"],
+                "params": []
+            }
+        }
+    ]
+}

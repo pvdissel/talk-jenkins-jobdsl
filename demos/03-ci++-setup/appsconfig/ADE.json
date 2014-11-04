@@ -1,0 +1,170 @@
+{
+    "fullName": "Something ADE",
+    "flow": {
+        "deployGroup": "frontendApp"
+    },
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ade"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean cobertura:clean compile dependency:list package pmd:pmd pmd:cpd cobertura:cobertura",
+                    "opts": "-Xmx1024m -Xms1024m -XX:MaxPermSize=1024m -DoutputFile=dependencies.txt"
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "ASCII",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "0",
+                            "line": "0",
+                            "conditional": "0"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "0",
+                            "line": "0",
+                            "conditional": "0"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "0",
+                            "line": "0",
+                            "conditional": "0"
+                        }
+                    ]
+                },
+                "dry": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "highThreshold": "50",
+                    "normalThreshold": "25"
+                },
+                "pmd": {
+                    "healthy": "40",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["something-ade-war/target/ade-dc/**/*=>tld/company/ade"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ade-db"
+            },
+            "ci": {
+                "locks": [
+                    "SOME_MORE_LOCK",
+                    "SOME_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh ade-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/ade_db-dc/**/*=>tld/company/ade_db"],
+                "params": []
+            }
+        }
+    ]
+}

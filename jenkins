@@ -1,0 +1,244 @@
+#!/bin/bash
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONTAINERS_DIR="${DIR}/.containers"
+
+jenkinsVersion="1.565.3"
+jenkinsPort="8080"
+seedJobName="Seed"
+
+dockerCmd="docker"
+containerName="$(basename "${BASH_SOURCE[0]}")"
+
+function updateGlobals() {
+    jenkinsUrl="http://localhost:${jenkinsPort}"
+    containerDir="${CONTAINERS_DIR}/${containerName}"
+    jenkinsDir="${containerDir}/jenkins-home"
+    jenkinsUserHomeDir="${containerDir}/jenkins-root"
+    jenkinsJobsDir="${jenkinsDir}/jobs"
+    jenkinsPluginsDir="${jenkinsDir}/plugins"
+    pluginUrlsFilename="plugin-urls.txt"
+    pluginUrlsFile="${DIR}/${pluginUrlsFilename}"
+    backupPluginsDir="${DIR}/.jenkins-plugins"
+    backupPluginUrlsFile="${backupPluginsDir}/${pluginUrlsFilename}"
+}
+
+function start() {
+    local projectPath="$1"
+    if [[ $# -ge 2 ]]; then
+        jenkinsPort="$2"
+    fi
+    updateGlobals
+    local volumes=("${jenkinsDir}:/var/jenkins_home")
+    volumes+=("${jenkinsUserHomeDir}:/root")
+
+    echo "Starting Jenkins..."
+
+    if [[ -n "${projectPath}" ]]; then
+        echo ">> Provided path to project [${projectPath}]"
+        if [[ ! "${projectPath}" == /* ]]; then
+            local originalProjectPath="${projectPath}"
+            projectPath="${DIR}/${projectPath}"
+            echo ">> Made relative path [${originalProjectPath}] absolute [${projectPath}]"
+        fi
+        if [[ -d "${projectPath}" ]]; then
+            echo "   Will mount it to as read-only to [/source] within the container"
+            volumes+=("${projectPath}:/source:ro")
+        else
+            echo "!! Project path [${projectPath}] is not an existing directory"
+            exit 1
+        fi
+    else
+        echo "!! No project path provided"
+        echo -e
+        usage
+        exit 1
+    fi
+
+    removeContainer
+
+    if [[ ! -d "${backupPluginsDir}" || $(diff "${pluginUrlsFile}" "${backupPluginUrlsFile}" > /dev/null 2>&1; echo $?) -ne 0 ]]; then
+        echo ">> Downloading the plugins..."
+        wget --input-file "${pluginUrlsFile}" --directory-prefix "${backupPluginsDir}" --continue -nv
+        if [[ $? -ne 0 ]]; then
+            echo "!! Error during downloading of the plugins"
+            exit 1
+        fi
+        cp -f "${pluginUrlsFile}" "${backupPluginUrlsFile}"
+        removeDir "${jenkinsPluginsDir}"
+    fi
+    if [[ ! -d "${jenkinsPluginsDir}" ]]; then
+        echo ">> Copying plugins to Jenkins..."
+        sudo mkdir -p "${jenkinsPluginsDir}"
+        sudo cp -rf "${backupPluginsDir}/." "${jenkinsPluginsDir}/"
+    fi
+
+    fixJobsDirAccess
+    installSeedJob
+
+    echo "Starting [${containerName}] container..."
+    ${dockerCmd} run -d -p ${jenkinsPort}:8080 --name ${containerName} -u root $(printf " -v %s" "${volumes[@]}") jenkins:${jenkinsVersion} > /dev/null 2>&1
+    if [[ $? == 0 ]]; then
+        echo ">> Container [${containerName}] started"
+    else
+        echo "!! An error occurred while starting container [${containerName}]"
+        exit 1
+    fi
+
+    echo ">> Waiting for Jenkins to be fully up and loaded..."
+    until ${dockerCmd} logs ${containerName} 2>&1 | grep "Jenkins is fully up and running" > /dev/null; do
+        sleep 1s
+    done
+
+    triggerSeedJob
+    echo -e
+    echo "Jenkins is fully up and running at [${jenkinsUrl}]"
+}
+
+function fixJobsDirAccess() {
+    echo ">> Make Jobs directory accessable for current user..."
+    sudo mkdir -p "${jenkinsJobsDir}"
+    sudo chown -R $USER "${jenkinsJobsDir}"
+}
+
+function installSeedJob() {
+    echo ">> Creating [${seedJobName}] job..."
+    local seedJobDir="${jenkinsJobsDir}/${seedJobName}"
+    sudo mkdir -p "${seedJobDir}"
+    sudo cp -f "${DIR}/seed-job-config.xml" "${seedJobDir}/config.xml"
+}
+
+function triggerSeedJob() {
+    echo ">> Triggering a [${seedJobName}] Job build"
+    curl -X POST "${jenkinsUrl}/job/${seedJobName}/build"
+}
+
+function getPublicJenkinsPortOfContainer() {
+    ${dockerCmd} inspect --format='{{range $p, $conf := .NetworkSettings.Ports}}{{with $p | eq "8080/tcp"}}{{(index $conf 0).HostPort}}{{end}}{{end}}' ${containerName}
+}
+
+function status() {
+    ${dockerCmd} ps -a ${containerName}
+}
+
+function stop() {
+    echo "Stopping container [${containerName}]..."
+    ${dockerCmd} stop ${containerName} > /dev/null 2>&1
+    echo -e
+    echo "Stopped container [${containerName}]"
+}
+
+function clear() {
+    echo "Removing any existing jobs..."
+    removeDir "${jenkinsJobsDir}/"
+    fixJobsDirAccess
+    installSeedJob
+    echo ">> Triggering a Jenkins reload..."
+    jenkinsPort="$(getPublicJenkinsPortOfContainer)"
+    jenkinsUrl=$(eval echo ${jenkinsUrl})
+
+    curl -X POST "${jenkinsUrl}/reload"
+    until [[ $(curl -s -o /dev/null -w '%{http_code}' "${jenkinsUrl}") -eq 200 ]]; do
+        sleep 1s
+    done
+
+    triggerSeedJob
+    echo -e
+    echo "Done clearing"
+}
+
+function removeContainer() {
+    echo ">> Remove existing container called [${containerName}]"
+    ${dockerCmd} rm -f ${containerName} > /dev/null 2>&1
+}
+
+function remove() {
+    echo "Removing Jenkins..."
+    removeContainer
+    echo ">> Removing Jenkins working directory [${jenkinsDir}]"
+    removeDir "${jenkinsDir}"
+    echo -e
+    echo "Done removing"
+}
+
+function removeAll() {
+    for d in ${CONTAINERS_DIR}/*/; do
+        containerName="$(basename "${d}")"
+        updateGlobals
+        echo "For container [${containerName}]..."
+        remove
+        echo "Removing left-overs..."
+        echo ">> Removing plugins backup"
+        removeDir "${backupPluginsDir}"
+        echo ">> Removing Jenkins user home"
+        removeDir "${jenkinsUserHomeDir}"
+        echo ">> Removing container directory"
+        removeDir "${containerDir}"
+    done
+    echo -e
+    echo "Done removing left-overs"
+}
+
+function removeDir() {
+    set -o xtrace
+    sudo rm -r "$1"
+    set +o xtrace
+}
+
+function usage() {
+    echo "Usage: $(basename $0) <command> [<args>]"
+    echo -e
+    echo "Available commands:"
+    echo "  start    PATH  [PORT]  Start Jenkins with given Gradle project, which must have the [jenkins-jobdsl] plugin configured"
+    echo "  stop                   Stop Jenkins"
+    echo "  restart                Restart Jenkins"
+    echo "  status                 Show if Jenkins is running or not"
+    echo "  clear                  Remove all jobs from Jenkins"
+    echo "                         [${jenkinsJobsDir}]"
+    echo "  remove                 Remove the Jenkins working directory"
+    echo "                         [${jenkinsDir}]"
+    echo "  remove-all             Remove all directories created by this script"
+    echo "                         [${jenkinsDir}]"
+    echo "                         [${jenkinsUserHomeDir}]"
+    echo "                         [${backupPluginsDir}]"
+}
+
+function requires() {
+    local command=$1
+    which ${command} > /dev/null 2>&1 || { echo "!! This script requires [${command}] to be installed" && exit 1; }
+}
+
+requires 'docker'
+requires 'curl'
+requires 'wget'
+
+updateGlobals
+
+command=$1; shift
+case "${command}" in
+    start)
+        start "$@"
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop && start
+        ;;
+    status)
+        status
+        ;;
+    clear)
+        clear
+        ;;
+    remove)
+        remove
+        ;;
+    remove-all)
+        removeAll
+        ;;
+    *)
+        usage
+        exit 1
+       ;;
+esac

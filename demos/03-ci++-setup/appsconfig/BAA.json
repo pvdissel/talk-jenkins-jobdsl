@@ -1,0 +1,35 @@
+{
+    "fullName": "Something BAA",
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-baa"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean source:jar javadoc:jar package dependency:tree --debug",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "junit": {
+                    "enabled": false
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["something-baa-web/target/baa-dc/**/*=>tld/company/baa"],
+                "params": []
+            }
+        }
+    ]
+}

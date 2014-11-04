@@ -1,0 +1,34 @@
+{
+    "fullName": "Something PHH",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-phh-db.git"
+            },
+            "ci": {
+                "locks": [
+                    "DB_RELATED_LOCK",
+                    "SOME_MORE_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh afe-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/phh_db-dc/**/*=>tld/company/phh_db"],
+                "params": []
+            }
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "fullName": "Something MAA",
+    "xlTest": {
+        "scm": {
+            "type": "git",
+            "base": "ssh://git@stash.dev.company.tld/group/something-maa-fitnesse.git"
+        }
+    },
+    "flow": {"enabled": false},
+    "pipelines": [
+        {
+            "type": "FIX",
+            "tool": {
+                "type": "gradle",
+                "version": ""
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "ssh://git@stash.dev.company.tld/group/something-maa-fixture.git"
+            },
+            "ci": {
+                "gradle": {
+                    "tasks": "clean build"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": ""
+                }
+            }
+        }
+    ]
+}

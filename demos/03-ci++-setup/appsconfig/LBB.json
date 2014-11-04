@@ -1,0 +1,93 @@
+{
+    "fullName": "Something LBB",
+    "flow": {
+        "deployGroup": "coreDB"
+    },
+    "pipelines": [
+        {
+            "type": "DB",
+            "group": 0,
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/lbb"
+            },
+            "ci": {
+                "locks": [
+                    "LBB_DB",
+                    "SOME_OTHER_LOCK",
+                    "SOME_LOCK",
+                    "SOME_MORE_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh lbb-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/lbb_db-dc/**/*=>tld/company/lbb_db"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "id": "RGN",
+            "group": 1,
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/rgn"
+            },
+            "ci": {
+                "locks": [
+                    "LBB_DB",
+                    "SOME_OTHER_LOCK",
+                    "SOME_LOCK"
+                ]
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/rgn_db-dc/**/*=>tld/company/rgn_db"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "id": "TOF",
+            "group": 1,
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/tof"
+            },
+            "ci": {
+                "locks": [
+                    "LBB_DB",
+                    "SOME_OTHER_LOCK",
+                    "SOME_LOCK"
+                ]
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/tof_db-dc/**/*=>tld/company/tof_db"],
+                "params": []
+            }
+        }
+    ]
+}

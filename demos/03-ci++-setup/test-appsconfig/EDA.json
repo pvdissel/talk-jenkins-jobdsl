@@ -1,0 +1,70 @@
+{
+    "fullName": "Something EDA",
+    "xlTest": {
+        "scm": {
+            "type": "git",
+            "base": "git@git.company.tld:group/something-eda.git"
+        },
+        "projectDir": "something-eda-fitnesse",
+        "suiteFilter": "NightlyIE",
+        "browser": "iexplore"
+    },
+    "pipelines": [
+        {
+            "type": "FIX",
+            "tool": {
+                "type": "gradle",
+                "version": ""
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-eda-fixtures.git"
+            },
+            "ci": {
+                "gradle": {
+                    "tasks": "clean build"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": ""
+                }
+            }
+        },
+        {
+            "type": "APP",
+            "tool": {
+                "type": "gradle",
+                "version": "wrapper"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-eda.git"
+            },
+            "ci": {
+                "gradle": {
+                    "tasks": "clean build assembleDeployableUnit"
+                },
+                "junit": {
+                    "glob": "**/test-results/*.xml"
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": [
+                    "build/properties/*.properties=>tld/company/eda/${SPRINT_DAY}.${CI_BUILD_NUMBER}/properties",
+                    "build/assembly/*.zip=>tld/company/eda/${SPRINT_DAY}.${CI_BUILD_NUMBER}/zip"
+                ],
+                "params": []
+            }
+        }
+    ]
+}

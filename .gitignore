@@ -1,0 +1,9 @@
+.containers
+.jenkins-plugins
+*.iml
+*.ipr
+*.iws
+.gradle
+.idea
+build
+out

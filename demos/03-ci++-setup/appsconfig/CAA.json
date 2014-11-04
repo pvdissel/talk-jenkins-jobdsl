@@ -1,0 +1,59 @@
+{
+  "fullName": "Something CAA",
+  "flow": {
+    "deploy": ["nightly"],
+    "deployGroup": "coreDB"
+  },
+  "pipelines": [
+    {
+      "type": "DB",
+      "tool": {
+        "type": "maven",
+        "version": "3.2.1"
+      },
+      "technology": {
+        "type": "oracle",
+        "version": ""
+      },
+      "scm": {
+        "type": "svn",
+        "base": "https://svn.company.tld/group/caa"
+      },
+      "ci": {
+        "locks": ["ANOTHER_DB_LOCK"],
+        "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh bbb-db.dev.company.tld"
+      },
+      "deploy": {
+        "publishedArtifacts": ["target/caa-dc/**/*=>tld/company/caa"],
+        "params": []
+      }
+    },
+    {
+      "type": "FIX",
+      "tool": {
+        "type": "maven",
+        "version": "3.0.1"
+      },
+      "technology": {
+        "type": "jdk",
+        "version": "6u45"
+      },
+      "scm": {
+        "type": "git",
+        "base": "git@git.company.tld:group/something-caa-fixtures.git"
+      },
+      "ci": {
+        "maven": {
+          "rootpom": "pom.xml",
+          "goals": "clean package -DperformRelease=true",
+          "opts": ""
+        },
+        "locks": [],
+        "publishedArtifacts": {
+          "includePattern": "",
+          "excludePattern": ""
+        }
+      }
+    }
+  ]
+}

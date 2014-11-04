@@ -1,0 +1,19 @@
+plugins {
+    id "nl.ikoodi.jenkins.jobdsl" version "0.1.5"
+    id "groovy"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy:1.8.9'
+    compile 'org.jenkins-ci.plugins:job-dsl-core:1.26'
+}
+
+jenkinsJobDsl {
+    jobConfigs {
+        from fileTree(dir: 'jobconfigs')
+    }
+}

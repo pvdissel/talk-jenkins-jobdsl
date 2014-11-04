@@ -1,0 +1,32 @@
+{
+    "fullName": "Something LAA",
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-laa.git"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "",
+                    "goals": "clean dependency:list package",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/laa-dc/**/*=>tld/company/laa"],
+                "params": []
+            }
+        }
+    ]
+}

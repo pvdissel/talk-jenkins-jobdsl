@@ -1,0 +1,179 @@
+{
+    "fullName": "Something BCD",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-bcd"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "pom.xml",
+                    "goals": "clean compile install -U",
+                    "opts": "-DoutputFile=dependencies.txt"
+                },
+                "cobertura": {
+                    "coberturaReportFile": "**/target/site/cobertura/coverage.xml",
+                    "onlyStable": "false",
+                    "failUnhealthy": "false",
+                    "failUnstable": "false",
+                    "autoUpdateHealth": "false",
+                    "autoUpdateStability": "false",
+                    "zoomCoverageChart": "false",
+                    "failNoReports": "false",
+                    "sourceEncoding": "UTF_8",
+                    "targets": [
+                        {
+                            "type": "healthy",
+                            "method": "2",
+                            "line": "2",
+                            "conditional": "2"
+                        },
+                        {
+                            "type": "unhealthy",
+                            "method": "1",
+                            "line": "1",
+                            "conditional": "1"
+                        },
+                        {
+                            "type": "failing",
+                            "method": "2",
+                            "line": "2",
+                            "conditional": "2"
+                        }
+                    ]
+                },
+                "dry": {
+                    "healthy": "",
+                    "unhealthy": "",
+                    "thresholdLimit": "low",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": "",
+                    "highThreshold": "20",
+                    "normalThreshold": "10"
+                },
+                "pmd": {
+                    "healthy": "0",
+                    "unhealthy": "",
+                    "thresholdLimit": "normal",
+                    "defaultEncoding": "",
+                    "canRunOnFailed": "",
+                    "useStableBuildAsReference": "false",
+                    "useDeltaValues": "",
+                    "thresholds": {
+                        "unstableTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedTotal": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "unstableNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        },
+                        "failedNew": {
+                            "all": "",
+                            "high": "",
+                            "normal": "",
+                            "low": ""
+                        }
+                    },
+                    "shouldDetectModules": "",
+                    "dontComputeNew": "",
+                    "doNotResolveRelativePaths": ""
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "**/something-bcd-*.jar,**/something-bcd-parent*.pom",
+                    "excludePattern": ""
+                }
+            },
+            "deploy": {
+                "publishedArtifacts": [
+                    "ear/target/*.ear=>tld/company/bcd/${SPRINT_DAY}.${CI_BUILD_NUMBER}/ear",
+                    "ear/target/*.xml=>tld/company/bcd/${SPRINT_DAY}.${CI_BUILD_NUMBER}/xml"
+                ],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-bcd"
+            },
+            "ci": {
+                "locks": [
+                    "BCD_DB",
+                    "SOME_MORE_LOCK",
+                    "SOME_LOCK",
+                    "SOME_OTHER_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh bcd-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/bcd_db-dc/**/*=>tld/company/bcd_db"],
+                "params": []
+            }
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "fullName": "Something ACB",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "git",
+                "base": "git@git.company.tld:group/something-acb.git"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "",
+                    "goals": "clean dependency:list package",
+                    "opts": ""
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/acb-dc/**/*=>tld/company/acb"],
+                "params": []
+            }
+        }
+    ]
+}

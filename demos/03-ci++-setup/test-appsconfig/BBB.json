@@ -1,0 +1,36 @@
+{
+    "fullName": "Something BBB",
+    "flow": {
+        "deploy": ["nightly"]
+    },
+    "pipelines": [
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/bbb"
+            },
+            "ci": {
+                "locks": [
+                    "ANOTHER_DB_LOCK",
+                    "SOME_MORE_LOCK",
+                    "SOME_LOCK",
+                    "SOME_OTHER_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_bos_db_dpl_parent.sh -h bbb-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/bbb_db-dc/**/*=>tld/company/bbb_db"],
+                "params": []
+            }
+        }
+    ]
+}

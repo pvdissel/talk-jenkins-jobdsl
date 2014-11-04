@@ -1,0 +1,89 @@
+{
+    "fullName": "Something ECB",
+    "flow": {
+        "deploy": ["evening"]
+    },
+    "pipelines": [
+        {
+            "type": "FIX",
+            "tool": {
+                "type": "gradle",
+                "version": ""
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ecb-fixtures"
+            },
+            "ci": {
+                "gradle": {
+                    "tasks": "clean build"
+                },
+                "locks": [],
+                "publishedArtifacts": {
+                    "includePattern": "",
+                    "excludePattern": ""
+                }
+            }
+        },
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ecb"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "",
+                    "goals": "clean package",
+                    "opts": ""
+                },
+                "junit": {
+                    "enabled": false
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/ecb-dc/**/*=>tld/company/ecb"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-ecb-db"
+            },
+            "ci": {
+                "locks": [
+                    "ECB_DB",
+                    "Something ECB"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh ecb-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/ecb_db-dc/**/*=>tld/company/ecb_db"],
+                "params": []
+            }
+        }
+    ]
+}

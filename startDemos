@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./demo-1 start "demos/01-few-jobs/" 8081
+./demo-2 start "demos/02-lots-of-jobs/" 8082
+./demo-3 start "demos/03-ci++-setup/" 8083
+./demo-4 start "demos/04-cd-setup/" 8084
+./demo-5 start "demos/05-live/" 8085

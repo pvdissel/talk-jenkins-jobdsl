@@ -1,0 +1,64 @@
+{
+    "fullName": "Something TAA",
+    "flow": {
+        "deployGroup": "frontendApp"
+    },
+    "pipelines": [
+        {
+            "type": "APP",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "jdk",
+                "version": "6u45"
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-taa"
+            },
+            "ci": {
+                "maven": {
+                    "rootpom": "",
+                    "goals": "package",
+                    "opts": ""
+                },
+                "junit": {
+                    "enabled": false
+                },
+                "locks": []
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/taa-dc/**/*=>tld/company/taa"],
+                "params": []
+            }
+        },
+        {
+            "type": "DB",
+            "tool": {
+                "type": "maven",
+                "version": "3.0.1"
+            },
+            "technology": {
+                "type": "oracle",
+                "version": ""
+            },
+            "scm": {
+                "type": "svn",
+                "base": "https://svn.company.tld/group/something-taa-db"
+            },
+            "ci": {
+                "locks": [
+                    "TAA_DB",
+                    "SOME_MORE_LOCK"
+                ],
+                "shell": "ssh-agent sh ${SCRIPTSHOME}/bin/ci_db_dpl_parent.sh taa-db.dev.company.tld"
+            },
+            "deploy": {
+                "publishedArtifacts": ["target/taa_db-dc/**/*=>tld/company/taa_db"],
+                "params": []
+            }
+        }
+    ]
+}
