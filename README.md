@@ -1,6 +1,10 @@
 Cultivating the Jenkins job jungle with Groovy
 ===================
 
+Presentation repository of the presentation:
+- Cultivating the Jenkins job jungle with Groovy    
+  of which you can find the video at [YouTube](https://www.youtube.com/watch?v=8jQm2wqX4xc)
+
 This presentation repository contains:
 - `demos` directory containing demo projects for different situations.
   See the README.md file in the specific demo project directory for details about that setup
