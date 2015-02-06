@@ -3,15 +3,21 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONTAINERS_DIR="${DIR}/.containers"
 
-jenkinsVersion="1.565.3"
+jenkinsVersion="1.580.2"
 jenkinsPort="8080"
 seedJobName="Seed"
 
 dockerCmd="docker"
-containerName="$(basename "${BASH_SOURCE[0]}")"
 
 function updateGlobals() {
+    containerName="$(basename "${BASH_SOURCE[0]}")-${jenkinsPort}"
+
     jenkinsUrl="http://localhost:${jenkinsPort}"
+    which boot2docker > /dev/null 2>&1
+    if [[ $? == 0 ]]; then
+        boot2dockerIp=$(boot2docker ip 2>/dev/null)
+        jenkinsUrl="http://${boot2dockerIp}:${jenkinsPort}"
+    fi
     containerDir="${CONTAINERS_DIR}/${containerName}"
     jenkinsDir="${containerDir}/jenkins-home"
     jenkinsUserHomeDir="${containerDir}/jenkins-root"
@@ -21,14 +27,11 @@ function updateGlobals() {
     pluginUrlsFile="${DIR}/${pluginUrlsFilename}"
     backupPluginsDir="${DIR}/.jenkins-plugins"
     backupPluginUrlsFile="${backupPluginsDir}/${pluginUrlsFilename}"
+    seedJobConfigFile="${DIR}/seed-job-config.xml"
 }
 
 function start() {
     local projectPath="$1"
-    if [[ $# -ge 2 ]]; then
-        jenkinsPort="$2"
-    fi
-    updateGlobals
     local volumes=("${jenkinsDir}:/var/jenkins_home")
     volumes+=("${jenkinsUserHomeDir}:/root")
 
@@ -71,13 +74,17 @@ function start() {
         echo ">> Copying plugins to Jenkins..."
         sudo mkdir -p "${jenkinsPluginsDir}"
         sudo cp -rf "${backupPluginsDir}/." "${jenkinsPluginsDir}/"
+        echo ">> Pinning plugins to not be overridden by Jenkins' defaults..."
+        for plugin in "${jenkinsPluginsDir}"/*.hpi; do
+            sudo touch "${plugin}.pinned"
+        done
     fi
 
     fixJobsDirAccess
     installSeedJob
 
     echo "Starting [${containerName}] container..."
-    ${dockerCmd} run -d -p ${jenkinsPort}:8080 --name ${containerName} -u root $(printf " -v %s" "${volumes[@]}") jenkins:${jenkinsVersion} > /dev/null 2>&1
+    ${dockerCmd} run -d -p ${jenkinsPort}:8080 --name ${containerName} -u root $(printf " -v %s" "${volumes[@]}") jenkins:${jenkinsVersion}
     if [[ $? == 0 ]]; then
         echo ">> Container [${containerName}] started"
     else
@@ -105,7 +112,7 @@ function installSeedJob() {
     echo ">> Creating [${seedJobName}] job..."
     local seedJobDir="${jenkinsJobsDir}/${seedJobName}"
     sudo mkdir -p "${seedJobDir}"
-    sudo cp -f "${DIR}/seed-job-config.xml" "${seedJobDir}/config.xml"
+    sudo cp -f "${seedJobConfigFile}" "${seedJobDir}/config.xml"
 }
 
 function triggerSeedJob() {
@@ -162,21 +169,20 @@ function remove() {
 }
 
 function removeAll() {
+    echo "Removing all state..."
     for d in ${CONTAINERS_DIR}/*/; do
         containerName="$(basename "${d}")"
+        jenkinsPort="$(echo "${containerName}" | sed 's/^.*-//')"
         updateGlobals
-        echo "For container [${containerName}]..."
-        remove
-        echo "Removing left-overs..."
-        echo ">> Removing plugins backup"
-        removeDir "${backupPluginsDir}"
-        echo ">> Removing Jenkins user home"
-        removeDir "${jenkinsUserHomeDir}"
-        echo ">> Removing container directory"
-        removeDir "${containerDir}"
+        echo ">> Removing container [${containerName}]..."
+        removeContainer
     done
+    echo ">> Removing containers state directory..."
+    removeDir "${CONTAINERS_DIR}"
+    echo ">> Removing plugins backup directory..."
+    removeDir "${backupPluginsDir}"
     echo -e
-    echo "Done removing left-overs"
+    echo "Done removing all state"
 }
 
 function removeDir() {
@@ -190,14 +196,14 @@ function usage() {
     echo -e
     echo "Available commands:"
     echo "  start    PATH  [PORT]  Start Jenkins with given Gradle project, which must have the [jenkins-jobdsl] plugin configured"
-    echo "  stop                   Stop Jenkins"
-    echo "  restart                Restart Jenkins"
+    echo "  stop           [PORT]  Stop Jenkins"
+    echo "  restart        [PORT]  Restart Jenkins"
     echo "  status                 Show if Jenkins is running or not"
     echo "  clear                  Remove all jobs from Jenkins"
     echo "                         [${jenkinsJobsDir}]"
-    echo "  remove                 Remove the Jenkins working directory"
+    echo "  remove         [PORT]  Remove the Jenkins working directory"
     echo "                         [${jenkinsDir}]"
-    echo "  remove-all             Remove all directories created by this script"
+    echo "  remove-all     [PORT]  Remove all directories created by this script"
     echo "                         [${jenkinsDir}]"
     echo "                         [${jenkinsUserHomeDir}]"
     echo "                         [${backupPluginsDir}]"
@@ -217,13 +223,28 @@ updateGlobals
 command=$1; shift
 case "${command}" in
     start)
+        if [[ $# -ge 2 ]]; then
+            jenkinsPort="$2"
+        fi
+        updateGlobals
+
         start "$@"
         ;;
     stop)
+        if [[ $# -ge 1 ]]; then
+            jenkinsPort="$1"
+        fi
+        updateGlobals
+
         stop
         ;;
     restart)
-        stop && start
+        if [[ $# -ge 2 ]]; then
+            jenkinsPort="$2"
+        fi
+        updateGlobals
+
+        stop && start "$@"
         ;;
     status)
         status
@@ -232,6 +253,11 @@ case "${command}" in
         clear
         ;;
     remove)
+        if [[ $# -ge 1 ]]; then
+            jenkinsPort="$1"
+        fi
+        updateGlobals
+
         remove
         ;;
     remove-all)
