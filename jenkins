@@ -12,11 +12,13 @@ dockerCmd="docker"
 function updateGlobals() {
     containerName="$(basename "${BASH_SOURCE[0]}")-${jenkinsPort}"
 
+    prefixCmd="sudo"
     jenkinsUrl="http://localhost:${jenkinsPort}"
     which boot2docker > /dev/null 2>&1
     if [[ $? == 0 ]]; then
         boot2dockerIp=$(boot2docker ip 2>/dev/null)
         jenkinsUrl="http://${boot2dockerIp}:${jenkinsPort}"
+        prefixCmd=""
     fi
     containerDir="${CONTAINERS_DIR}/${containerName}"
     jenkinsDir="${containerDir}/jenkins-home"
@@ -33,7 +35,9 @@ function updateGlobals() {
 function start() {
     local projectPath="$1"
     local volumes=("${jenkinsDir}:/var/jenkins_home")
-    volumes+=("${jenkinsUserHomeDir}:/root")
+# if you want to add/edit the files in /root of the jenkins container
+# uncomment the line below:
+#    volumes+=("${jenkinsUserHomeDir}:/root")
 
     echo "Starting Jenkins..."
 
@@ -72,11 +76,11 @@ function start() {
     fi
     if [[ ! -d "${jenkinsPluginsDir}" ]]; then
         echo ">> Copying plugins to Jenkins..."
-        sudo mkdir -p "${jenkinsPluginsDir}"
-        sudo cp -rf "${backupPluginsDir}/." "${jenkinsPluginsDir}/"
+        ${prefixCmd} mkdir -p "${jenkinsPluginsDir}"
+        ${prefixCmd} cp -rf "${backupPluginsDir}/." "${jenkinsPluginsDir}/"
         echo ">> Pinning plugins to not be overridden by Jenkins' defaults..."
         for plugin in "${jenkinsPluginsDir}"/*.hpi; do
-            sudo touch "${plugin}.pinned"
+            ${prefixCmd} touch "${plugin}.pinned"
         done
     fi
 
@@ -104,15 +108,15 @@ function start() {
 
 function fixJobsDirAccess() {
     echo ">> Make Jobs directory accessable for current user..."
-    sudo mkdir -p "${jenkinsJobsDir}"
-    sudo chown -R $USER "${jenkinsJobsDir}"
+    ${prefixCmd} mkdir -p "${jenkinsJobsDir}"
+    ${prefixCmd} chown -R $USER "${jenkinsJobsDir}"
 }
 
 function installSeedJob() {
     echo ">> Creating [${seedJobName}] job..."
     local seedJobDir="${jenkinsJobsDir}/${seedJobName}"
-    sudo mkdir -p "${seedJobDir}"
-    sudo cp -f "${seedJobConfigFile}" "${seedJobDir}/config.xml"
+    ${prefixCmd} mkdir -p "${seedJobDir}"
+    ${prefixCmd} cp -f "${seedJobConfigFile}" "${seedJobDir}/config.xml"
 }
 
 function triggerSeedJob() {
@@ -187,7 +191,7 @@ function removeAll() {
 
 function removeDir() {
     set -o xtrace
-    sudo rm -r "$1"
+    ${prefixCmd} rm -r "$1"
     set +o xtrace
 }
 
