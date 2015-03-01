@@ -97,6 +97,10 @@ function start() {
     fi
 
     echo ">> Waiting for Jenkins to be fully up and loaded..."
+    echo "   (this may take a few minutes on first run)"
+    if [[ -n "${boot2dockerIp}" ]]; then
+        echo "   (especially as boot2docker user, I've heard >10 minutes)"
+    fi
     until ${dockerCmd} logs ${containerName} 2>&1 | grep "Jenkins is fully up and running" > /dev/null; do
         sleep 1s
     done
