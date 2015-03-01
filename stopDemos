@@ -1,5 +1,6 @@
 #!/bin/bash
 
 for demo in demo-*; do
-    ./${demo} stop
+    port=${demo#*-}
+    ./${demo} stop "808${port}"
 done
