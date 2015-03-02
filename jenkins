@@ -3,26 +3,31 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONTAINERS_DIR="${DIR}/.containers"
 
+mountDir=
+jenkinsHost="localhost"
 jenkinsVersion="1.580.2"
 jenkinsPort="8080"
 seedJobName="Seed"
 
 dockerCmd="docker"
+prefixCmd="sudo"
 
 function updateGlobals() {
     containerName="$(basename "${BASH_SOURCE[0]}")-${jenkinsPort}"
 
-    prefixCmd="sudo"
-    jenkinsUrl="http://localhost:${jenkinsPort}"
-    which boot2docker > /dev/null 2>&1
-    if [[ $? == 0 ]]; then
-        boot2dockerIp=$(boot2docker ip 2>/dev/null)
-        jenkinsUrl="http://${boot2dockerIp}:${jenkinsPort}"
-        prefixCmd=""
-    fi
+    jenkinsUrl="http://${jenkinsHost}:${jenkinsPort}"
+
     containerDir="${CONTAINERS_DIR}/${containerName}"
+    mountContainerDir=$containerDir
+
+    if [ -n "${mountDir}" ]; then
+        mountContainerDir="${mountDir}/.containers/${containerName}"
+    fi
+
     jenkinsDir="${containerDir}/jenkins-home"
+    mountJenkinsDir="${mountContainerDir}/jenkins-home"
     jenkinsUserHomeDir="${containerDir}/jenkins-root"
+    mountJenkinsUserHomeDir="${mountContainerDir}/jenkins-root"
     jenkinsJobsDir="${jenkinsDir}/jobs"
     jenkinsPluginsDir="${jenkinsDir}/plugins"
     pluginUrlsFilename="plugin-urls.txt"
@@ -30,27 +35,41 @@ function updateGlobals() {
     backupPluginsDir="${DIR}/.jenkins-plugins"
     backupPluginUrlsFile="${backupPluginsDir}/${pluginUrlsFilename}"
     seedJobConfigFile="${DIR}/seed-job-config.xml"
+
+
+
+
+
+
 }
 
 function start() {
     local projectPath="$1"
-    local volumes=("${jenkinsDir}:/var/jenkins_home")
+    local volumes=("${mountJenkinsDir}:/var/jenkins_home")
 # if you want to add/edit the files in /root of the jenkins container
 # uncomment the line below:
-#    volumes+=("${jenkinsUserHomeDir}:/root")
+    volumes+=("${mountJenkinsUserHomeDir}:/root")
 
     echo "Starting Jenkins..."
 
     if [[ -n "${projectPath}" ]]; then
+        local originalProjectPath="${projectPath}"
+
         echo ">> Provided path to project [${projectPath}]"
         if [[ ! "${projectPath}" == /* ]]; then
-            local originalProjectPath="${projectPath}"
             projectPath="${DIR}/${projectPath}"
             echo ">> Made relative path [${originalProjectPath}] absolute [${projectPath}]"
         fi
         if [[ -d "${projectPath}" ]]; then
+            mountProjectPath=$projectPath
+
             echo "   Will mount it to as read-only to [/source] within the container"
-            volumes+=("${projectPath}:/source:ro")
+
+            if [ -n "${mountDir}" ]; then
+                mountProjectPath="${mountDir}/${originalProjectPath}"
+            fi
+
+            volumes+=("${mountProjectPath}:/source:ro")
         else
             echo "!! Project path [${projectPath}] is not an existing directory"
             exit 1
@@ -88,6 +107,7 @@ function start() {
     installSeedJob
 
     echo "Starting [${containerName}] container..."
+
     ${dockerCmd} run -d -p ${jenkinsPort}:8080 --name ${containerName} -u root $(printf " -v %s" "${volumes[@]}") jenkins:${jenkinsVersion}
     if [[ $? == 0 ]]; then
         echo ">> Container [${containerName}] started"
@@ -225,6 +245,29 @@ function requires() {
 requires 'docker'
 requires 'curl'
 requires 'wget'
+
+# process any optional options (starting with --)
+while [[ $1 == --* ]]; do
+
+    case "$1" in
+        --mountDir)
+           echo "mountDir: $2"
+           mountDir=$2
+           shift
+        ;;
+        --jenkinsHost)
+           echo "jenkinsHost: $2"
+           jenkinsHost=$2
+           shift
+        ;;
+        --noSudo)
+           echo "noSudo"
+           prefixCmd=
+        ;;
+    esac
+
+    shift
+done
 
 updateGlobals
 
